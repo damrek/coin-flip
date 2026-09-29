@@ -6,6 +6,9 @@ and the history keeps score.
 ![Vanilla HTML, CSS and JavaScript](https://img.shields.io/badge/stack-vanilla%20HTML%20%2F%20CSS%20%2F%20JS-informational)
 ![No dependencies](https://img.shields.io/badge/dependencies-none-success)
 ![No build step](https://img.shields.io/badge/build-none-success)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+![Screenshot of the coin flip app showing the coin, a 4/4 tally and a history of eight flips](assets/screenshot.png)
 
 ## Features
 
@@ -44,6 +47,4 @@ Issues and pull requests are welcome.
 
 ## License
 
-No license file is published with this repository, so it is not open source:
-all rights reserved. You can read the code, but you may not reuse it without
-permission.
+[MIT](LICENSE) © 2026 damrek
