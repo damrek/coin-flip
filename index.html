@@ -1,29 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coin Toss</title>
-  <meta name="description" content="Toss the coin and let it decide.">
+  <title>Moneda</title>
+  <meta name="description" id="metaDescription" content="Lanza la moneda y deja que decida.">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="glow" aria-hidden="true"></div>
 
+  <!-- Language selector -->
+  <div class="lang" role="group" data-i18n-aria="langLabel">
+    <button type="button" class="lang__btn" data-lang="es" aria-pressed="true">ES</button>
+    <button type="button" class="lang__btn" data-lang="en" aria-pressed="false">EN</button>
+  </div>
+
   <!-- History panel -->
-  <aside class="history" aria-label="Toss history">
+  <aside class="history" data-i18n-aria="historyLabel">
     <header class="history__head">
-      <h2 class="history__title">History</h2>
-      <button type="button" class="history__clear" id="clearHistory">Clear</button>
+      <h2 class="history__title" data-i18n="historyTitle">Histórico</h2>
+      <button type="button" class="history__clear" id="clearHistory" data-i18n="clear">Limpiar</button>
     </header>
 
     <dl class="tally">
       <div class="tally__item">
-        <dt class="tally__label">Heads</dt>
+        <dt class="tally__label" data-i18n="heads">Cara</dt>
         <dd class="tally__value" id="countHeads">0</dd>
       </div>
       <div class="tally__item">
-        <dt class="tally__label">Tails</dt>
+        <dt class="tally__label" data-i18n="tails">Cruz</dt>
         <dd class="tally__value" id="countTails">0</dd>
       </div>
     </dl>
@@ -33,31 +39,42 @@
 
   <!-- Main scene -->
   <main class="stage">
-    <h1 class="title">Coin Toss</h1>
-    <p class="subtitle">Toss the coin and let it decide.</p>
+    <h1 class="title" data-i18n="heading">Moneda</h1>
+    <p class="subtitle" data-i18n="subtitle">Toca la moneda y deja que decida.</p>
 
     <div class="coin-area">
       <div class="shadow" id="coinShadow" aria-hidden="true"></div>
 
-      <button type="button" class="coin" id="coin" aria-describedby="hint">
+      <button type="button" class="coin" id="coin" data-i18n-aria="coinLabel">
         <span class="coin__lift" id="coinLift">
           <span class="coin__spin" id="coinSpin">
+            <!-- Heads: classical medallion portrait -->
             <span class="face face--heads" aria-hidden="true">
               <span class="face__ring"></span>
-              <span class="face__mark">C</span>
-              <span class="face__word">HEADS</span>
+              <svg class="face__art" viewBox="0 0 100 100" focusable="false">
+                <path class="solid" d="M50 22c12 0 22 10 22 23 0 13-10 23-22 23s-22-10-22-23c0-13 10-23 22-23Z"/>
+                <path class="solid" d="M28 44c-2-16 8-25 22-25s24 9 22 25c-3-10-10-14-22-14s-19 4-22 14Z"/>
+                <path class="solid" d="M42 64h16v10c0 4 3 6 8 8-9 4-23 4-32 0 5-2 8-4 8-8Z"/>
+                <path class="line" d="M38 46h8"/>
+                <path class="line" d="M54 46h8"/>
+                <path class="line" d="M50 47v10h-5"/>
+                <path class="line" d="M42 60h16"/>
+              </svg>
             </span>
+            <!-- Tails: cross pattée -->
             <span class="face face--tails" aria-hidden="true">
               <span class="face__ring"></span>
-              <span class="face__mark face__mark--cross"></span>
-              <span class="face__word">TAILS</span>
+              <svg class="face__art" viewBox="0 0 100 100" focusable="false">
+                <path class="solid" d="M34 16h32l-9 27h27v23H57v18H43V66H16V43h27Z"/>
+                <circle class="line" cx="50" cy="50" r="30"/>
+              </svg>
             </span>
           </span>
         </span>
       </button>
     </div>
 
-    <p class="hint" id="hint">Toss the coin</p>
+    <p class="hint" id="hint" data-i18n="hint">Pulsa la moneda</p>
     <p class="result" id="result" role="status" aria-live="polite"></p>
   </main>
 

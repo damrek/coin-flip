@@ -87,7 +87,6 @@ body {
   font-size: 0.8rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  transition: opacity 300ms ease;
 }
 
 .result {
@@ -135,6 +134,7 @@ body {
 
 .coin {
   position: relative;
+  display: block;
   width: var(--coin-size);
   height: var(--coin-size);
   padding: 0;
@@ -174,9 +174,7 @@ body {
   position: absolute;
   inset: 0;
   display: grid;
-  place-content: center;
-  justify-items: center;
-  gap: 0.15rem;
+  place-items: center;
   border-radius: 50%;
   border: 3px solid var(--gold-5);
   backface-visibility: hidden;
@@ -201,49 +199,26 @@ body {
   border-radius: 50%;
 }
 
-.face__mark {
-  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-  font-size: calc(var(--coin-size) * 0.36);
-  font-weight: 700;
-  line-height: 1;
-  text-shadow: 0 1px 0 rgba(255, 244, 196, 0.6);
+/* Drawn art, engraved into the metal */
+.face__art {
+  display: block;
+  width: 76%;
+  height: 76%;
+  color: var(--gold-5);
+  /* A light edge under the strokes sells the engraving. */
+  filter: drop-shadow(0 1px 0 rgba(255, 244, 196, 0.55));
 }
 
-.face__mark--cross {
-  position: relative;
-  width: calc(var(--coin-size) * 0.3);
-  height: calc(var(--coin-size) * 0.3);
-  font-size: 0;
-  text-shadow: none;
+.face__art .solid {
+  fill: currentColor;
 }
 
-.face__mark--cross::before,
-.face__mark--cross::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  border-radius: 2px;
-  background: var(--gold-5);
-}
-
-/* Maltese cross */
-.face__mark--cross::before {
-  width: 100%;
-  height: 32%;
-}
-
-.face__mark--cross::after {
-  width: 32%;
-  height: 100%;
-}
-
-.face__word {
-  font-size: calc(var(--coin-size) * 0.075);
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-indent: 0.22em;
-  opacity: 0.85;
+.face__art .line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* ------------------------------------------------------------
@@ -328,6 +303,52 @@ body {
   100% {
     transform: translateY(0) scale(1);
   }
+}
+
+/* ------------------------------------------------------------
+   Language selector
+   ------------------------------------------------------------ */
+
+.lang {
+  position: fixed;
+  top: 1.25rem;
+  left: 1.25rem;
+  z-index: 2;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+}
+
+.lang__btn {
+  padding: 0.3rem 0.7rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-dim);
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 180ms ease, color 180ms ease;
+}
+
+.lang__btn:hover {
+  color: var(--ink);
+}
+
+.lang__btn[aria-pressed="true"] {
+  background: rgba(217, 161, 58, 0.18);
+  color: var(--gold-2);
+}
+
+.lang__btn:focus-visible {
+  outline: 2px solid var(--gold-2);
+  outline-offset: 2px;
 }
 
 /* ------------------------------------------------------------
@@ -417,6 +438,31 @@ body {
   max-height: 42vh;
   overflow-y: auto;
   list-style: none;
+
+  /* The list starts overflowing at 11 entries. A default scrollbar here is a
+     bright grey slab on a dark panel, so it is styled down to a thin gold
+     hairline instead. scrollbar-gutter keeps the panel from jumping sideways
+     by the scrollbar width the moment the list becomes scrollable. */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(217, 161, 58, 0.45) transparent;
+  scrollbar-gutter: stable;
+}
+
+.history__list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.history__list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.history__list::-webkit-scrollbar-thumb {
+  background: rgba(217, 161, 58, 0.4);
+  border-radius: 3px;
+}
+
+.history__list::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 161, 58, 0.65);
 }
 
 .history__empty {
@@ -467,8 +513,14 @@ body {
 }
 
 @media (max-width: 620px) {
-  .history {
+  .lang {
     top: auto;
+    bottom: 0.75rem;
+    left: 0.75rem;
+  }
+
+  .history {
+    top: 0.75rem;
     right: 0.75rem;
     left: 0.75rem;
     width: auto;

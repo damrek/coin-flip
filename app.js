@@ -1,13 +1,70 @@
 /**
- * Coin Toss — toss logic and history.
+ * Coin Toss — toss logic, history, and localisation.
  *
  * Core rule: the outcome is drawn BEFORE the animation starts, and the final
  * spin angle is derived from it. Drawing mid-flight would let the coin land on
  * a face that disagrees with the outcome that was already decided.
+ *
+ * Localisation stores language-neutral keys ('heads' / 'tails') in history and
+ * translates them at render time, so switching language re-labels the existing
+ * history instead of invalidating it.
  */
 
-const STORAGE_KEY = 'coinflip.history.v1';
+const HISTORY_KEY = 'coinflip.history.v1';
+const LANG_KEY = 'coinflip.lang';
 const MAX_ENTRIES = 50;
+
+/* ----------------------------------------------------------------
+   Strings
+   ---------------------------------------------------------------- */
+
+const STRINGS = {
+  es: {
+    docTitle: 'Moneda',
+    metaDescription: 'Lanza la moneda y deja que decida.',
+    heading: 'Moneda',
+    subtitle: 'Toca la moneda y deja que decida.',
+    hint: 'Pulsa la moneda',
+    heads: 'Cara',
+    tails: 'Cruz',
+    historyTitle: 'Histórico',
+    clear: 'Limpiar',
+    empty: 'Aún no hay lanzamientos.',
+    coinLabel: 'Lanzar la moneda',
+    langLabel: 'Idioma',
+    historyLabel: 'Histórico de lanzamientos',
+  },
+  en: {
+    docTitle: 'Coin Toss',
+    metaDescription: 'Toss the coin and let it decide.',
+    heading: 'Coin Toss',
+    subtitle: 'Toss the coin and let it decide.',
+    hint: 'Toss the coin',
+    heads: 'Heads',
+    tails: 'Tails',
+    historyTitle: 'History',
+    clear: 'Clear',
+    empty: 'No tosses yet.',
+    coinLabel: 'Toss the coin',
+    langLabel: 'Language',
+    historyLabel: 'Toss history',
+  },
+};
+
+const DEFAULT_LANG = 'es';
+
+let lang = DEFAULT_LANG;
+let lastSide = null; // last landed outcome, kept so a language switch can relabel it
+
+/** Translate a key for the active language, falling back to Spanish. */
+function t(key) {
+  const table = STRINGS[lang] || STRINGS[DEFAULT_LANG];
+  return table[key] ?? STRINGS[DEFAULT_LANG][key] ?? key;
+}
+
+/* ----------------------------------------------------------------
+   DOM
+   ---------------------------------------------------------------- */
 
 const coin = document.getElementById('coin');
 const lift = document.getElementById('coinLift');
@@ -18,6 +75,8 @@ const list = document.getElementById('historyList');
 const clearBtn = document.getElementById('clearHistory');
 const countHeads = document.getElementById('countHeads');
 const countTails = document.getElementById('countTails');
+const metaDescription = document.getElementById('metaDescription');
+const langButtons = Array.from(document.querySelectorAll('.lang__btn'));
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -30,7 +89,7 @@ let pending = null;
 
 function readHistory() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(HISTORY_KEY);
     const parsed = raw ? JSON.parse(raw) : [];
     return Array.isArray(parsed)
       ? parsed.filter((e) => e && (e.side === 'heads' || e.side === 'tails'))
@@ -43,10 +102,61 @@ function readHistory() {
 
 function writeHistory(entries) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries.slice(0, MAX_ENTRIES)));
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(entries.slice(0, MAX_ENTRIES)));
   } catch {
     // Without persistence everything still works; it just resets on reload.
   }
+}
+
+function readLang() {
+  try {
+    const saved = localStorage.getItem(LANG_KEY);
+    if (saved && STRINGS[saved]) return saved;
+  } catch {
+    // fall through to detection
+  }
+  const preferred = navigator.language || '';
+  return preferred.toLowerCase().startsWith('es') ? 'es' : 'en';
+}
+
+function writeLang(value) {
+  try {
+    localStorage.setItem(LANG_KEY, value);
+  } catch {
+    // Preference simply will not survive a reload.
+  }
+}
+
+/* ----------------------------------------------------------------
+   Language
+   ---------------------------------------------------------------- */
+
+function applyLang(next) {
+  if (!STRINGS[next]) return;
+  lang = next;
+  writeLang(next);
+
+  document.documentElement.lang = next;
+  document.title = t('docTitle');
+  metaDescription.setAttribute('content', t('metaDescription'));
+
+  // Every element carrying a data hook is relabelled in place.
+  for (const el of document.querySelectorAll('[data-i18n]')) {
+    el.textContent = t(el.dataset.i18n);
+  }
+  for (const el of document.querySelectorAll('[data-i18n-aria]')) {
+    el.setAttribute('aria-label', t(el.dataset.i18nAria));
+  }
+  for (const btn of langButtons) {
+    btn.setAttribute('aria-pressed', String(btn.dataset.lang === next));
+  }
+
+  if (lastSide) result.textContent = t(lastSide);
+  render();
+}
+
+for (const btn of langButtons) {
+  btn.addEventListener('click', () => applyLang(btn.dataset.lang));
 }
 
 /* ----------------------------------------------------------------
@@ -66,7 +176,7 @@ function render() {
   if (entries.length === 0) {
     const li = document.createElement('li');
     li.className = 'history__empty';
-    li.textContent = 'No tosses yet.';
+    li.textContent = t('empty');
     list.replaceChildren(li);
     return;
   }
@@ -81,7 +191,7 @@ function render() {
 
       const side = document.createElement('span');
       side.className = 'entry__side';
-      side.textContent = entry.side === 'heads' ? 'Heads' : 'Tails';
+      side.textContent = t(entry.side);
 
       const n = document.createElement('span');
       n.className = 'entry__n';
@@ -128,7 +238,8 @@ function flip() {
   if (reduceMotion.matches) {
     // No animation: show the outcome directly.
     spin.style.transform = `rotateX(${endAngle}deg)`;
-    result.textContent = isHeads ? 'Heads' : 'Tails';
+    lastSide = side;
+    result.textContent = t(side);
     result.classList.add('is-visible');
     commit(side);
     return;
@@ -156,7 +267,8 @@ function settle(side) {
   busy = false;
   coin.disabled = false;
 
-  result.textContent = side === 'heads' ? 'Heads' : 'Tails';
+  lastSide = side;
+  result.textContent = t(side);
   result.classList.add('is-visible');
 
   // The bounce lives on .coin, separate from the arc, so the two do not fight
@@ -182,8 +294,9 @@ coin.addEventListener('click', flip);
 
 clearBtn.addEventListener('click', () => {
   writeHistory([]);
+  lastSide = null;
   render();
   result.classList.remove('is-visible');
 });
 
-render();
+applyLang(readLang());
