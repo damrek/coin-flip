@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coin Toss</title>
+  <meta name="description" content="Toss the coin and let it decide.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="glow" aria-hidden="true"></div>
+
+  <!-- History panel -->
+  <aside class="history" aria-label="Toss history">
+    <header class="history__head">
+      <h2 class="history__title">History</h2>
+      <button type="button" class="history__clear" id="clearHistory">Clear</button>
+    </header>
+
+    <dl class="tally">
+      <div class="tally__item">
+        <dt class="tally__label">Heads</dt>
+        <dd class="tally__value" id="countHeads">0</dd>
+      </div>
+      <div class="tally__item">
+        <dt class="tally__label">Tails</dt>
+        <dd class="tally__value" id="countTails">0</dd>
+      </div>
+    </dl>
+
+    <ol class="history__list" id="historyList" aria-live="polite"></ol>
+  </aside>
+
+  <!-- Main scene -->
+  <main class="stage">
+    <h1 class="title">Coin Toss</h1>
+    <p class="subtitle">Toss the coin and let it decide.</p>
+
+    <div class="coin-area">
+      <div class="shadow" id="coinShadow" aria-hidden="true"></div>
+
+      <button type="button" class="coin" id="coin" aria-describedby="hint">
+        <span class="coin__lift" id="coinLift">
+          <span class="coin__spin" id="coinSpin">
+            <span class="face face--heads" aria-hidden="true">
+              <span class="face__ring"></span>
+              <span class="face__mark">C</span>
+              <span class="face__word">HEADS</span>
+            </span>
+            <span class="face face--tails" aria-hidden="true">
+              <span class="face__ring"></span>
+              <span class="face__mark face__mark--cross"></span>
+              <span class="face__word">TAILS</span>
+            </span>
+          </span>
+        </span>
+      </button>
+    </div>
+
+    <p class="hint" id="hint">Toss the coin</p>
+    <p class="result" id="result" role="status" aria-live="polite"></p>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
