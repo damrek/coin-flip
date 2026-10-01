@@ -7,8 +7,9 @@ build/
 *.min.js
 *.min.css
 
-# Local tooling state
+# Local tooling state (never uploaded)
 .atl/
+odd/
 .opencode/
 .claude/
 .codegraph/

@@ -8,13 +8,15 @@ and the history keeps score.
 ![No build step](https://img.shields.io/badge/build-none-success)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-![Screenshot of the coin flip app showing the coin, a 4/4 tally and a history of eight flips](assets/screenshot.png)
+![Screenshot of the coin flip app showing the coin, a 3/5 tally with flip stats, and a history of eight flips](assets/screenshot.png)
 
 ## Features
 
 - CSS-only flip animation with a drop shadow that scales with the lift
 - Coin faces drawn as inline SVG (a classical medallion for heads, a cross pattée for tails)
 - Running heads/tails tally
+- Flip stats with heads %, current streak, and best streaks per side
+- Optional WebAudio flip sounds (tick at the apex, thud on landing) with haptics, off by default and persisted in `localStorage`
 - Scrollable history of the last 50 flips, persisted in `localStorage`
 - Spanish / English language selector
 - Respects `prefers-reduced-motion`: the result is announced without the animation

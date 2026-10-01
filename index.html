@@ -14,6 +14,7 @@
   <div class="lang" role="group" data-i18n-aria="langLabel">
     <button type="button" class="lang__btn" data-lang="es" aria-pressed="true">ES</button>
     <button type="button" class="lang__btn" data-lang="en" aria-pressed="false">EN</button>
+    <button type="button" class="sound-btn" id="soundToggle" aria-pressed="false">🔇</button>
   </div>
 
   <!-- History panel -->
@@ -31,6 +32,21 @@
       <div class="tally__item">
         <dt class="tally__label" data-i18n="tails">Cruz</dt>
         <dd class="tally__value" id="countTails">0</dd>
+      </div>
+    </dl>
+
+    <dl class="stats">
+      <div class="stats__row">
+        <dt class="stats__label" data-i18n="statsHeadsPct">Cara %</dt>
+        <dd class="stats__value" id="statsHeadsPct">–</dd>
+      </div>
+      <div class="stats__row">
+        <dt class="stats__label" data-i18n="streakNow">Racha actual</dt>
+        <dd class="stats__value" id="statsStreak">–</dd>
+      </div>
+      <div class="stats__row">
+        <dt class="stats__label" data-i18n="bestStreaks">Mejor racha</dt>
+        <dd class="stats__value" id="statsBest">–</dd>
       </div>
     </dl>
 
