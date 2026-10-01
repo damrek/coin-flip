@@ -8,7 +8,7 @@ and the history keeps score.
 ![No build step](https://img.shields.io/badge/build-none-success)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-![Screenshot of the coin flip app showing the coin, a 4/4 tally and a history of eight flips](assets/screenshot.png)
+![Screenshot of the coin flip app showing the coin, a 3/5 tally with flip stats, and a history of eight flips](assets/screenshot.png)
 
 ## Features
 
