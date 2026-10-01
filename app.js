@@ -12,6 +12,7 @@
 
 const HISTORY_KEY = 'coinflip.history.v1';
 const LANG_KEY = 'coinflip.lang';
+const SOUND_KEY = 'coinflip.sound.v1';
 const MAX_ENTRIES = 50;
 
 /* ----------------------------------------------------------------
@@ -33,6 +34,11 @@ const STRINGS = {
     coinLabel: 'Lanzar la moneda',
     langLabel: 'Idioma',
     historyLabel: 'Histórico de lanzamientos',
+    statsHeadsPct: 'Cara %',
+    streakNow: 'Racha actual',
+    bestStreaks: 'Mejor racha',
+    soundOn: 'Activar sonido',
+    soundOff: 'Desactivar sonido',
   },
   en: {
     docTitle: 'Coin Toss',
@@ -48,6 +54,11 @@ const STRINGS = {
     coinLabel: 'Toss the coin',
     langLabel: 'Language',
     historyLabel: 'Toss history',
+    statsHeadsPct: 'Heads %',
+    streakNow: 'Current streak',
+    bestStreaks: 'Best streaks',
+    soundOn: 'Turn sound on',
+    soundOff: 'Turn sound off',
   },
 };
 
@@ -77,6 +88,10 @@ const countHeads = document.getElementById('countHeads');
 const countTails = document.getElementById('countTails');
 const metaDescription = document.getElementById('metaDescription');
 const langButtons = Array.from(document.querySelectorAll('.lang__btn'));
+const statsHeadsPct = document.getElementById('statsHeadsPct');
+const statsStreak = document.getElementById('statsStreak');
+const statsBest = document.getElementById('statsBest');
+const soundToggle = document.getElementById('soundToggle');
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -128,6 +143,108 @@ function writeLang(value) {
 }
 
 /* ----------------------------------------------------------------
+   Sound preference (persisted, default OFF) + WebAudio blips
+   ---------------------------------------------------------------- */
+
+let soundEnabled = false;
+let audioCtx = null;
+
+function readSound() {
+  try {
+    return localStorage.getItem(SOUND_KEY) === 'on' ? 'on' : 'off';
+  } catch {
+    return 'off';
+  }
+}
+
+function writeSound(value) {
+  try {
+    localStorage.setItem(SOUND_KEY, value);
+  } catch {
+    // Preference simply will not survive a reload.
+  }
+}
+
+soundEnabled = readSound() === 'on';
+
+/** Lazily create the AudioContext on a user-enabled flip. Returns null when OFF. */
+function ensureAudio() {
+  if (!soundEnabled) return null;
+  try {
+    if (!audioCtx) {
+      const Ctor = window.AudioContext || window.webkitAudioContext;
+      if (!Ctor) return null;
+      audioCtx = new Ctor();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {});
+    }
+    return audioCtx;
+  } catch {
+    return null;
+  }
+}
+
+/** Play a short enveloped oscillator blip. Never throws. */
+function blip(freq, duration, gainValue, type) {
+  try {
+    const ctx = ensureAudio();
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    const now = ctx.currentTime;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(gainValue, now + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + duration + 0.02);
+  } catch {
+    // Blocked or unsupported audio must never break the flip.
+  }
+}
+
+/** High tick near the flip apex. */
+function playTick() {
+  blip(880, 0.07, 0.12, 'sine');
+}
+
+/** Soft landing thud. */
+function playThud() {
+  blip(150, 0.14, 0.2, 'sine');
+}
+
+/** Short haptic buzz on landing, only when sound is ON. No-op otherwise. */
+function buzz() {
+  try {
+    if (soundEnabled && navigator.vibrate) navigator.vibrate(15);
+  } catch {
+    // Haptics are best-effort.
+  }
+}
+
+/** Sync the toggle glyph, pressed state, and bilingual label. */
+function updateSoundToggle() {
+  if (!soundToggle) return;
+  soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+  soundToggle.setAttribute('aria-pressed', String(soundEnabled));
+  const label = soundEnabled ? t('soundOff') : t('soundOn');
+  soundToggle.setAttribute('aria-label', label);
+  soundToggle.setAttribute('title', label);
+}
+
+if (soundToggle) {
+  soundToggle.addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    writeSound(soundEnabled ? 'on' : 'off');
+    updateSoundToggle();
+  });
+}
+
+/* ----------------------------------------------------------------
    Language
    ---------------------------------------------------------------- */
 
@@ -152,6 +269,7 @@ function applyLang(next) {
   }
 
   if (lastSide) result.textContent = t(lastSide);
+  updateSoundToggle();
   render();
 }
 
@@ -163,12 +281,78 @@ for (const btn of langButtons) {
    History rendering
    ---------------------------------------------------------------- */
 
+/* ----------------------------------------------------------------
+   Stats (derived from history, newest-first)
+   ---------------------------------------------------------------- */
+
+/**
+ * Derive heads %, the current streak, and the longest run per side.
+ * Entries are newest-first, so the current streak is the leading run.
+ */
+function computeStats(entries) {
+  const total = entries.length;
+  if (total === 0) {
+    return {
+      headsPct: 0,
+      current: { side: null, length: 0 },
+      bestHeads: 0,
+      bestTails: 0,
+    };
+  }
+
+  let heads = 0;
+  for (const e of entries) if (e.side === 'heads') heads += 1;
+
+  // Current streak: leading run.
+  const firstSide = entries[0].side;
+  let length = 0;
+  while (length < total && entries[length].side === firstSide) length += 1;
+
+  // Longest run per side.
+  let bestHeads = 0;
+  let bestTails = 0;
+  let runSide = null;
+  let runLen = 0;
+  for (const e of entries) {
+    if (e.side === runSide) {
+      runLen += 1;
+    } else {
+      runSide = e.side;
+      runLen = 1;
+    }
+    if (runSide === 'heads' && runLen > bestHeads) bestHeads = runLen;
+    if (runSide === 'tails' && runLen > bestTails) bestTails = runLen;
+  }
+
+  return {
+    headsPct: Math.round((heads / total) * 100),
+    current: { side: firstSide, length },
+    bestHeads,
+    bestTails,
+  };
+}
+
+function renderStats(entries) {
+  const stats = computeStats(entries);
+  if (entries.length === 0) {
+    statsHeadsPct.textContent = '–';
+    statsStreak.textContent = '–';
+    statsBest.textContent = '–';
+    return;
+  }
+  statsHeadsPct.textContent = `${stats.headsPct}%`;
+  statsStreak.textContent = `${t(stats.current.side)} ×${stats.current.length}`;
+  statsBest.textContent = `${t('heads')} ${stats.bestHeads} · ${t('tails')} ${stats.bestTails}`;
+}
+
 function render() {
   const entries = readHistory();
 
   const heads = entries.filter((e) => e.side === 'heads').length;
   countHeads.textContent = String(heads);
   countTails.textContent = String(entries.length - heads);
+
+  renderStats(entries);
 
   // The empty state is rendered here rather than living in the markup: the list
   // is rebuilt wholesale, so a static node inside it would be wiped on the very
@@ -242,6 +426,9 @@ function flip() {
     result.textContent = t(side);
     result.classList.add('is-visible');
     commit(side);
+    // Sound is decorative here: stats + result are already correct without it.
+    playThud();
+    buzz();
     return;
   }
 
@@ -249,6 +436,14 @@ function flip() {
   pending = side;
   coin.disabled = true;
   result.classList.remove('is-visible');
+
+  // Tick near the flight apex (~630ms of the 1400ms flight). Guarded so a
+  // stale timer can never sound for a flip that already settled or cleared.
+  if (soundEnabled) {
+    setTimeout(() => {
+      if (pending === side) playTick();
+    }, 630);
+  }
 
   restart();
   lift.classList.add('is-flipping');
@@ -283,6 +478,8 @@ function settle(side) {
   );
 
   commit(side);
+  playThud();
+  buzz();
   pending = null;
 }
 
