@@ -3,6 +3,8 @@
 A tap-to-flip coin that settles the argument. Tap the coin, it spins, it lands,
 and the history keeps score.
 
+**Live demo: https://damrek.github.io/coin-flip/**
+
 ![Vanilla HTML, CSS and JavaScript](https://img.shields.io/badge/stack-vanilla%20HTML%20%2F%20CSS%20%2F%20JS-informational)
 ![No dependencies](https://img.shields.io/badge/dependencies-none-success)
 ![No build step](https://img.shields.io/badge/build-none-success)
