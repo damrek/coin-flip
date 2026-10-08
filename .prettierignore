@@ -1,0 +1,4 @@
+# Legacy-formatted files excluded from the format gate (not reformatted).
+index.html
+style.css
+README.md
