@@ -1,12 +1,39 @@
 import { DEFAULT_LANG, isLang, t } from './i18n.js';
 import type { Lang, StringKey } from './i18n.js';
-import { readHistory, writeHistory, writeLang } from './store.js';
+import { readHistory, writeCollapsed, writeHistory, writeLang } from './store.js';
 import type { Side } from './game.js';
 import { updateSoundToggle } from './sound.js';
 import { renderStats } from './stats.js';
 
 let lang: Lang = DEFAULT_LANG;
 let lastSide: Side | null = null; // last landed outcome, kept so a language switch can relabel it
+let collapsed = false; // history panel state; resolved once in main.ts init
+
+/** Whether the history panel body is currently collapsed. */
+export function isCollapsed(): boolean {
+  return collapsed;
+}
+
+/** Reflect the collapsed flag in the DOM: class + hidden + bilingual toggle. */
+export function applyCollapsedState(): void {
+  document.querySelector('.history')?.classList.toggle('is-collapsed', collapsed);
+  const body = document.getElementById('historyBody');
+  if (body) body.hidden = collapsed;
+  const toggle = document.getElementById('toggleHistory');
+  if (toggle) {
+    toggle.setAttribute('aria-expanded', String(!collapsed));
+    const label = t(lang, collapsed ? 'expand' : 'collapse');
+    toggle.textContent = label;
+    toggle.setAttribute('aria-label', label);
+  }
+}
+
+/** Persist the new collapsed state and reflect it in the DOM. */
+export function setCollapsed(value: boolean): void {
+  collapsed = value;
+  writeCollapsed(value);
+  applyCollapsedState();
+}
 
 /** Active language. */
 export function getLang(): Lang {
@@ -45,6 +72,7 @@ export function applyLang(next: Lang | string): void {
     if (result) result.textContent = t(lang, lastSide);
   }
   updateSoundToggle(lang);
+  applyCollapsedState();
   render();
 }
 

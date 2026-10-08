@@ -21,9 +21,11 @@
   <aside class="history" data-i18n-aria="historyLabel">
     <header class="history__head">
       <h2 class="history__title" data-i18n="historyTitle">Histórico</h2>
+      <button type="button" class="history__toggle" id="toggleHistory" aria-expanded="true" aria-controls="historyBody" aria-label="Ocultar">Ocultar</button>
       <button type="button" class="history__clear" id="clearHistory" data-i18n="clear">Limpiar</button>
     </header>
 
+    <div id="historyBody">
     <dl class="tally">
       <div class="tally__item">
         <dt class="tally__label" data-i18n="heads">Cara</dt>
@@ -51,6 +53,7 @@
     </dl>
 
     <ol class="history__list" id="historyList" aria-live="polite"></ol>
+    </div>
   </aside>
 
   <!-- Main scene -->
