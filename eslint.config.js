@@ -9,7 +9,7 @@ import js from '@eslint/js';
 // ESLint therefore covers the JavaScript files with the core recommended set
 // (@eslint/js is an explicit dep: eslint 10 no longer re-exports it, and
 // relying on transitive hoisting breaks the install).
-// - legacy app.js is ignored: untouchable in T1, retired in T3.
+// - legacy app.js is ignored: kept in repo as reference, no longer loaded.
 // - dist/ is build output.
 // - src/*.ts and tsdown.config.ts are type-checked by tsc, not parsed here.
 export default [

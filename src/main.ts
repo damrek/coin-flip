@@ -1,6 +1,5 @@
 // Bundle entry: query the DOM, wire the events, and apply the saved language.
-// index.html keeps loading app.js until the T3 cutover, so this bundle
-// is not live yet.
+// Loaded by index.html via dist/main.iife.js; init() auto-runs on import.
 
 import { flip, getPending, settle } from './game.js';
 import { applyLang, clearHistory, getLang } from './ui.js';
