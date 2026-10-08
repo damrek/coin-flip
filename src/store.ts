@@ -1,4 +1,4 @@
-import { HISTORY_KEY, LANG_KEY, MAX_ENTRIES } from './config.js';
+import { HISTORY_KEY, LANG_KEY, MAX_ENTRIES, SOUND_KEY } from './config.js';
 import type { Lang } from './i18n.js';
 import type { Side } from './game.js';
 
@@ -8,7 +8,6 @@ export interface Entry {
   at: number;
 }
 
-/** Read history newest-first, dropping malformed entries. Full port in T2. */
 export function readHistory(): Entry[] {
   try {
     const raw = localStorage.getItem(HISTORY_KEY);
@@ -27,7 +26,6 @@ export function readHistory(): Entry[] {
   }
 }
 
-/** Persist history capped at MAX_ENTRIES. Full port in T2. */
 export function writeHistory(entries: Entry[]): void {
   try {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(entries.slice(0, MAX_ENTRIES)));
@@ -36,22 +34,42 @@ export function writeHistory(entries: Entry[]): void {
   }
 }
 
-/** Read the saved language. Detection fallback is ported in T2. */
 export function readLang(): Lang {
-  // TODO(T2): port saved-value + navigator detection from app.js.
   try {
     const saved = localStorage.getItem(LANG_KEY);
     if (saved === 'es' || saved === 'en') return saved;
   } catch {
-    // Fall through to the default.
+    // Blocked storage: fall through to navigator detection.
   }
-  return 'es';
+  const preferred: string =
+    typeof navigator !== 'undefined' && typeof navigator.language === 'string'
+      ? navigator.language
+      : '';
+  return preferred.toLowerCase().startsWith('es') ? 'es' : 'en';
 }
 
-/** Persist the language choice. */
 export function writeLang(value: Lang): void {
   try {
     localStorage.setItem(LANG_KEY, value);
+  } catch {
+    // Preference simply will not survive a reload.
+  }
+}
+
+/** Persisted sound preference. Default is OFF. */
+export type SoundState = 'on' | 'off';
+
+export function readSound(): SoundState {
+  try {
+    return localStorage.getItem(SOUND_KEY) === 'on' ? 'on' : 'off';
+  } catch {
+    return 'off';
+  }
+}
+
+export function writeSound(value: SoundState): void {
+  try {
+    localStorage.setItem(SOUND_KEY, value);
   } catch {
     // Preference simply will not survive a reload.
   }

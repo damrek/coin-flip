@@ -75,3 +75,8 @@ export const DEFAULT_LANG: Lang = 'es';
 export function t(lang: Lang, key: StringKey): string {
   return STRINGS[lang][key] ?? STRINGS[DEFAULT_LANG][key] ?? key;
 }
+
+/** Runtime guard for language values arriving from storage or the DOM. */
+export function isLang(value: unknown): value is Lang {
+  return value === 'es' || value === 'en';
+}

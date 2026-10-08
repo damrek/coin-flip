@@ -1,38 +1,92 @@
-import { SOUND_KEY } from './config.js';
+import type { Lang } from './i18n.js';
+import { t } from './i18n.js';
+import { readSound, writeSound } from './store.js';
 
-/** Persisted sound preference. Default is OFF. */
-export type SoundState = 'on' | 'off';
+let soundEnabled: boolean = readSound() === 'on';
+let audioCtx: AudioContext | null = null;
 
-export function readSound(): SoundState {
+export function isSoundEnabled(): boolean {
+  return soundEnabled;
+}
+
+/** Lazily create the AudioContext on a user-enabled flip. Returns null when OFF. */
+function ensureAudio(): AudioContext | null {
+  if (!soundEnabled) return null;
   try {
-    return localStorage.getItem(SOUND_KEY) === 'on' ? 'on' : 'off';
+    if (!audioCtx) {
+      const Ctor: typeof AudioContext | undefined =
+        window.AudioContext ??
+        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!Ctor) return null;
+      audioCtx = new Ctor();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {
+        // Resume is best-effort; playback simply stays silent.
+      });
+    }
+    return audioCtx;
   } catch {
-    return 'off';
+    return null;
   }
 }
 
-export function writeSound(value: SoundState): void {
+/** Play a short enveloped oscillator blip. Never throws. */
+function blip(freq: number, duration: number, gainValue: number, type: OscillatorType): void {
   try {
-    localStorage.setItem(SOUND_KEY, value);
+    const ctx = ensureAudio();
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    const now = ctx.currentTime;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(gainValue, now + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + duration + 0.02);
   } catch {
-    // Preference simply will not survive a reload.
+    // Blocked or unsupported audio must never break the flip.
   }
 }
 
-// TODO(T2): port WebAudio tick/thud, haptics (only when sound is on),
-// and the toggle wiring from app.js.
+/** High tick near the flip apex. */
 export function playTick(): void {
-  // Stub for T2.
+  blip(880, 0.07, 0.12, 'sine');
 }
 
+/** Soft landing thud. */
 export function playThud(): void {
-  // Stub for T2.
+  blip(150, 0.14, 0.2, 'sine');
 }
 
+/** Short haptic buzz on landing, only when sound is ON. No-op otherwise. */
 export function buzz(): void {
-  // Stub for T2.
+  try {
+    if (soundEnabled && navigator.vibrate) navigator.vibrate(15);
+  } catch {
+    // Haptics are best-effort.
+  }
 }
 
-export function updateSoundToggle(): void {
-  // Stub for T2.
+/** Sync the toggle glyph, pressed state, and bilingual label. */
+export function updateSoundToggle(lang: Lang): void {
+  const toggle = document.getElementById('soundToggle');
+  if (!toggle) return;
+  toggle.textContent = soundEnabled ? '🔊' : '🔇';
+  toggle.setAttribute('aria-pressed', String(soundEnabled));
+  const label = soundEnabled ? t(lang, 'soundOff') : t(lang, 'soundOn');
+  toggle.setAttribute('aria-label', label);
+  toggle.setAttribute('title', label);
+}
+
+/** Flip the persisted preference and refresh the toggle. Returns the new state. */
+export function toggleSound(lang: Lang): boolean {
+  soundEnabled = !soundEnabled;
+  writeSound(soundEnabled ? 'on' : 'off');
+  updateSoundToggle(lang);
+  return soundEnabled;
 }
