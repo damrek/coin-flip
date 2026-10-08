@@ -5,8 +5,8 @@ and the history keeps score.
 
 **Live demo: https://damrek.github.io/coin-flip/**
 
-![Vanilla HTML, CSS and JavaScript](https://img.shields.io/badge/stack-vanilla%20HTML%20%2F%20CSS%20%2F%20JS-informational)
-![No dependencies](https://img.shields.io/badge/dependencies-none-success)
+![TypeScript, HTML and CSS](https://img.shields.io/badge/stack-TypeScript%20%2F%20HTML%20%2F%20CSS-informational)
+![No runtime dependencies](https://img.shields.io/badge/dependencies-runtime_none-success)
 ![TypeScript bundled with tsdown](https://img.shields.io/badge/build-tsdown-informational)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -42,7 +42,6 @@ Then open <http://localhost:8000>.
 | --- | --- |
 | `index.html` | Markup, i18n hooks via `data-i18n`, inline SVG coin faces |
 | `style.css` | Layout, glow background, flip animation, scrollbar styling |
-| `app.js` | Legacy vanilla script, kept as reference until removal |
 | `src/main.ts` | Bundle entry: queries the DOM and wires events |
 | `src/game.ts` | Flip state machine and outcome logic |
 | `src/ui.ts` | DOM rendering, language switching, history view |
@@ -53,7 +52,8 @@ Then open <http://localhost:8000>.
 | `src/config.ts` | Shared constants |
 | `dist/` | Built minified IIFE bundle loaded by `index.html` (gitignored, produced by `npm run build`) |
 
-State lives in two `localStorage` keys: `coinflip.history.v1` and `coinflip.lang`.
+State lives in three `localStorage` keys: `coinflip.history.v1`, `coinflip.lang`,
+and `coinflip.sound.v1` (`on`/`off`, default `off`).
 Clearing the history empties the first one and leaves the rest untouched.
 
 ## Deploy

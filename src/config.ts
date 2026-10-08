@@ -1,5 +1,5 @@
 // Shared storage keys and limits. These exact strings are the persistence
-// contract with app.js and must not change (T2 ports the behavior as-is).
+// contract with stored user data and must not change.
 
 export const HISTORY_KEY = 'coinflip.history.v1';
 export const LANG_KEY = 'coinflip.lang';

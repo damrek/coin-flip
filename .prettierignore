@@ -1,5 +1,4 @@
-# Legacy files: untouchable in T1, owned by the T3 cutover.
-app.js
+# Legacy-formatted files excluded from the format gate (not reformatted).
 index.html
 style.css
 README.md
