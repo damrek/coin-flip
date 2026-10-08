@@ -1,4 +1,4 @@
-import { HISTORY_KEY, LANG_KEY, MAX_ENTRIES, SOUND_KEY } from './config.js';
+import { HISTORY_COLLAPSED_KEY, HISTORY_KEY, LANG_KEY, MAX_ENTRIES, SOUND_KEY } from './config.js';
 import type { Lang } from './i18n.js';
 import type { Side } from './game.js';
 
@@ -70,6 +70,30 @@ export function readSound(): SoundState {
 export function writeSound(value: SoundState): void {
   try {
     localStorage.setItem(SOUND_KEY, value);
+  } catch {
+    // Preference simply will not survive a reload.
+  }
+}
+
+/**
+ * Persisted collapsed preference for the history panel. Returns `null` when
+ * no preference was saved yet so the caller can fall back to the viewport
+ * default. Stored as the exact strings 'true' / 'false'.
+ */
+export function readCollapsed(): boolean | null {
+  try {
+    const saved = localStorage.getItem(HISTORY_COLLAPSED_KEY);
+    if (saved === 'true') return true;
+    if (saved === 'false') return false;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export function writeCollapsed(value: boolean): void {
+  try {
+    localStorage.setItem(HISTORY_COLLAPSED_KEY, value ? 'true' : 'false');
   } catch {
     // Preference simply will not survive a reload.
   }

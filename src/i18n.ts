@@ -22,7 +22,9 @@ export type StringKey =
   | 'streakNow'
   | 'bestStreaks'
   | 'soundOn'
-  | 'soundOff';
+  | 'soundOff'
+  | 'collapse'
+  | 'expand';
 
 export type StringTable = Record<StringKey, string>;
 
@@ -46,6 +48,8 @@ export const STRINGS: Record<Lang, StringTable> = {
     bestStreaks: 'Mejor racha',
     soundOn: 'Activar sonido',
     soundOff: 'Desactivar sonido',
+    collapse: 'Ocultar',
+    expand: 'Mostrar',
   },
   en: {
     docTitle: 'Coin Toss',
@@ -66,6 +70,8 @@ export const STRINGS: Record<Lang, StringTable> = {
     bestStreaks: 'Best streaks',
     soundOn: 'Turn sound on',
     soundOff: 'Turn sound off',
+    collapse: 'Hide',
+    expand: 'Show',
   },
 };
 
