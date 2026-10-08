@@ -7,7 +7,6 @@
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "outDir": "dist",
     "exactOptionalPropertyTypes": true
   },
   "include": ["src", "tsdown.config.ts"]
