@@ -10,7 +10,7 @@ and the history keeps score.
 ![TypeScript bundled with tsdown](https://img.shields.io/badge/build-tsdown-informational)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-![Screenshot of the coin flip app showing the coin, a 3/5 tally with flip stats, and a history of eight flips](assets/screenshot.png)
+![Screenshot of the coin flip app showing the coin, a 4/4 tally with flip stats, and a history of eight flips](assets/screenshot.png)
 
 ## Features
 
@@ -20,6 +20,7 @@ and the history keeps score.
 - Flip stats with heads %, current streak, and best streaks per side
 - Optional WebAudio flip sounds (tick at the apex, thud on landing) with haptics, off by default and persisted in `localStorage`
 - Scrollable history of the last 50 flips, persisted in `localStorage`
+- Collapsible history panel, with its expanded/collapsed state persisted in `localStorage`
 - Spanish / English language selector
 - Respects `prefers-reduced-motion`: the result is announced without the animation
 - Keyboard accessible, with `aria-pressed`, `role="status"` and `aria-live` regions
