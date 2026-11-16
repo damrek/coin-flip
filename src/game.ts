@@ -5,8 +5,12 @@
 import { t } from './i18n.js';
 import { commit, getLang, setLastSide } from './ui.js';
 import { buzz, isSoundEnabled, playThud, playTick } from './sound.js';
+import { getFlipDurationMs } from './speed.js';
 
 export type Side = 'heads' | 'tails';
+
+/** Fraction of the flight where the coin is at its apex and the tick sounds. */
+const TICK_AT = 0.45;
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -62,14 +66,23 @@ export function flip(): void {
   busy = true;
   pending = side;
   coin.disabled = true;
+  // The slider is locked mid-flight: changing --flip-duration under a running
+  // animation would move the landing, and the tick already on the clock would
+  // sound at the wrong moment.
+  const speedRange = document.getElementById('speedRange') as HTMLInputElement | null;
+  if (speedRange) speedRange.disabled = true;
   result.classList.remove('is-visible');
 
-  // Tick near the flight apex (~630ms of the 1400ms flight). Guarded so a
-  // stale timer can never sound for a flip that already settled or cleared.
+  // Tick near the flight apex, as a fraction of the current speed so the sound
+  // stays on the apex at every setting. Guarded so a stale timer can never
+  // sound for a flip that already settled or cleared.
   if (isSoundEnabled()) {
-    window.setTimeout(() => {
-      if (pending === side) playTick();
-    }, 630);
+    window.setTimeout(
+      () => {
+        if (pending === side) playTick();
+      },
+      Math.round(getFlipDurationMs() * TICK_AT),
+    );
   }
 
   restart(lift, spin, shadow);
@@ -92,6 +105,8 @@ export function settle(side: Side): void {
 
   busy = false;
   coin.disabled = false;
+  const speedRange = document.getElementById('speedRange') as HTMLInputElement | null;
+  if (speedRange) speedRange.disabled = false;
 
   setLastSide(side);
   result.textContent = t(getLang(), side);

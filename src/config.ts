@@ -5,6 +5,22 @@ export const HISTORY_KEY = 'coinflip.history.v1';
 export const LANG_KEY = 'coinflip.lang';
 export const SOUND_KEY = 'coinflip.sound.v1';
 
+/** Persisted flight-speed factor. Stored as the plain decimal string, e.g. '1.25'. */
+export const SPEED_KEY = 'coinflip.flip-speed.v1';
+
+/**
+ * Flight duration in ms at 1× speed. The default of --flip-duration in
+ * style.css must stay in sync with this value; src/speed.ts overrides the
+ * custom property at runtime from the saved factor.
+ */
+export const FLIP_BASE_MS = 1400;
+
+/** Allowed speed band and slider grid. 1× is the default and the base duration. */
+export const SPEED_MIN = 0.5;
+export const SPEED_MAX = 2;
+export const SPEED_STEP = 0.25;
+export const SPEED_DEFAULT = 1;
+
 /**
  * Persistence contract for the collapsible history panel. Values are the
  * exact strings 'true' (collapsed) and 'false' (expanded); absence means no

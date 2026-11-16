@@ -17,6 +17,13 @@
     <button type="button" class="sound-btn" id="soundToggle" aria-pressed="false">🔇</button>
   </div>
 
+  <!-- Flip speed -->
+  <div class="speed">
+    <label class="speed__label" for="speedRange" data-i18n="speed">Vel</label>
+    <input class="speed__range" id="speedRange" type="range" min="0.5" max="2" step="0.25" value="1">
+    <output class="speed__value" id="speedValue" for="speedRange">1×</output>
+  </div>
+
   <!-- History panel -->
   <aside class="history" data-i18n-aria="historyLabel">
     <header class="history__head">
