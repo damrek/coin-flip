@@ -5,6 +5,7 @@ import { flip, getPending, settle } from './game.js';
 import { applyLang, clearHistory, getLang, isCollapsed, setCollapsed } from './ui.js';
 import { readCollapsed, readLang } from './store.js';
 import { toggleSound } from './sound.js';
+import { initSpeed, setSpeed } from './speed.js';
 
 export function init(): void {
   const coin = document.getElementById('coin');
@@ -12,6 +13,7 @@ export function init(): void {
   const clearBtn = document.getElementById('clearHistory');
   const toggleHistory = document.getElementById('toggleHistory');
   const soundToggle = document.getElementById('soundToggle');
+  const speedRange = document.getElementById('speedRange') as HTMLInputElement | null;
   const langButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('.lang__btn'));
 
   coin?.addEventListener('click', flip);
@@ -39,10 +41,15 @@ export function init(): void {
     toggleSound(getLang());
   });
 
+  speedRange?.addEventListener('input', () => {
+    setSpeed(Number(speedRange.value));
+  });
+
   // Saved preference wins; with none, narrow screens start collapsed so the
   // panel never covers the coin, wide screens start expanded.
   setCollapsed(readCollapsed() ?? window.matchMedia('(max-width: 620px)').matches);
 
+  initSpeed();
   applyLang(readLang());
 }
 

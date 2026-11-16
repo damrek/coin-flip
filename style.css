@@ -405,6 +405,61 @@ body {
 }
 
 /* ------------------------------------------------------------
+   Flip speed
+   ------------------------------------------------------------ */
+
+/* A second fixed chip under the language one: it keeps the stage's vertical
+   rhythm untouched, which matters because body overflow is hidden. */
+.speed {
+  position: fixed;
+  top: 3.9rem;
+  left: 1.25rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+  color: var(--ink-dim);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.speed__label {
+  cursor: pointer;
+}
+
+.speed__range {
+  width: 84px;
+  height: 4px;
+  margin: 0;
+  accent-color: var(--gold-3);
+  cursor: pointer;
+}
+
+.speed__range:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.speed__range:focus-visible {
+  outline: 2px solid var(--gold-2);
+  outline-offset: 4px;
+  border-radius: 999px;
+}
+
+.speed__value {
+  min-width: 2.4em;
+  color: var(--gold-2);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------
    History
    ------------------------------------------------------------ */
 
@@ -614,6 +669,12 @@ body {
   .lang {
     top: auto;
     bottom: 0.75rem;
+    left: 0.75rem;
+  }
+
+  .speed {
+    top: auto;
+    bottom: 3.5rem;
     left: 0.75rem;
   }
 

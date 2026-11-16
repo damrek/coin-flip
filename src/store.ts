@@ -1,4 +1,11 @@
-import { HISTORY_COLLAPSED_KEY, HISTORY_KEY, LANG_KEY, MAX_ENTRIES, SOUND_KEY } from './config.js';
+import {
+  HISTORY_COLLAPSED_KEY,
+  HISTORY_KEY,
+  LANG_KEY,
+  MAX_ENTRIES,
+  SOUND_KEY,
+  SPEED_KEY,
+} from './config.js';
 import type { Lang } from './i18n.js';
 import type { Side } from './game.js';
 
@@ -94,6 +101,30 @@ export function readCollapsed(): boolean | null {
 export function writeCollapsed(value: boolean): void {
   try {
     localStorage.setItem(HISTORY_COLLAPSED_KEY, value ? 'true' : 'false');
+  } catch {
+    // Preference simply will not survive a reload.
+  }
+}
+
+/**
+ * Persisted flight-speed factor, or `null` when absent, corrupt, or storage is
+ * blocked. Band and grid validation belong to src/speed.ts, so a hand-edited
+ * value is corrected rather than trusted.
+ */
+export function readSpeed(): number | null {
+  try {
+    const raw = localStorage.getItem(SPEED_KEY);
+    if (raw === null) return null;
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function writeSpeed(value: number): void {
+  try {
+    localStorage.setItem(SPEED_KEY, String(value));
   } catch {
     // Preference simply will not survive a reload.
   }

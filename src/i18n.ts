@@ -24,7 +24,8 @@ export type StringKey =
   | 'soundOn'
   | 'soundOff'
   | 'collapse'
-  | 'expand';
+  | 'expand'
+  | 'speed';
 
 export type StringTable = Record<StringKey, string>;
 
@@ -50,6 +51,7 @@ export const STRINGS: Record<Lang, StringTable> = {
     soundOff: 'Desactivar sonido',
     collapse: 'Ocultar',
     expand: 'Mostrar',
+    speed: 'Vel',
   },
   en: {
     docTitle: 'Coin Toss',
@@ -72,6 +74,7 @@ export const STRINGS: Record<Lang, StringTable> = {
     soundOff: 'Turn sound off',
     collapse: 'Hide',
     expand: 'Show',
+    speed: 'Speed',
   },
 };
 

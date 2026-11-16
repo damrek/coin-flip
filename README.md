@@ -19,6 +19,7 @@ and the history keeps score.
 - Running heads/tails tally
 - Flip stats with heads %, current streak, and best streaks per side
 - Optional WebAudio flip sounds (tick at the apex, thud on landing) with haptics, off by default and persisted in `localStorage`
+- Adjustable flip speed from 0.5× to 2×, persisted in `localStorage`; the tick and the thud follow the chosen duration
 - Scrollable history of the last 50 flips, persisted in `localStorage`
 - Collapsible history panel, with its expanded/collapsed state persisted in `localStorage`
 - Spanish / English language selector
@@ -49,12 +50,14 @@ Then open <http://localhost:8000>.
 | `src/store.ts` | `localStorage` persistence for history, language, sound |
 | `src/stats.ts` | Tally, heads %, streaks |
 | `src/sound.ts` | WebAudio tick/thud and haptics |
+| `src/speed.ts` | Flip-speed factor, `--flip-duration` and sound timing |
 | `src/i18n.ts` | Spanish/English strings |
 | `src/config.ts` | Shared constants |
 | `dist/` | Built minified IIFE bundle loaded by `index.html` (gitignored, produced by `npm run build`) |
 
-State lives in three `localStorage` keys: `coinflip.history.v1`, `coinflip.lang`,
-and `coinflip.sound.v1` (`on`/`off`, default `off`).
+State lives in four `localStorage` keys: `coinflip.history.v1`, `coinflip.lang`,
+`coinflip.sound.v1` (`on`/`off`, default `off`), and `coinflip.flip-speed.v1`
+(`0.5`–`2`, default `1`).
 Clearing the history empties the first one and leaves the rest untouched.
 
 ## Deploy
