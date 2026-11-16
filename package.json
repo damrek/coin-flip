@@ -8,6 +8,7 @@
     "dev": "tsdown --watch",
     "build": "tsdown",
     "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "preview": "python3 -m http.server --directory . 4173"
