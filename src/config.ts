@@ -31,3 +31,6 @@ export const HISTORY_COLLAPSED_KEY = 'coinflip.history-collapsed.v1';
 
 /** Maximum history entries kept, newest-first. */
 export const MAX_ENTRIES = 50;
+
+/** Photogrammetry scan of the aureus, served from assets/ as a static file. */
+export const MODEL_URL = 'assets/models/aureus/scene.gltf';

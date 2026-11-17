@@ -6,6 +6,7 @@ import { t } from './i18n.js';
 import { commit, getLang, setLastSide } from './ui.js';
 import { buzz, isSoundEnabled, playThud, playTick } from './sound.js';
 import { getFlipDurationMs } from './speed.js';
+import { flipCoin3d, isCoin3dActive } from './coin3d.js';
 
 export type Side = 'heads' | 'tails';
 
@@ -83,6 +84,21 @@ export function flip(): void {
       },
       Math.round(getFlipDurationMs() * TICK_AT),
     );
+  }
+
+  // The WebGL coin animates itself and reports back when it lands. The ground
+  // shadow keeps its CSS animation, which already follows --flip-duration, so
+  // it stays in sync with the tween for free.
+  if (isCoin3dActive()) {
+    shadow.classList.add('is-flipping');
+    const turns = 5 + Math.floor(Math.random() * 2);
+    void flipCoin3d({ turns, toTails: side === 'tails', durationMs: getFlipDurationMs() }).then(
+      () => {
+        shadow.classList.remove('is-flipping');
+        settle(side);
+      },
+    );
+    return;
   }
 
   restart(lift, spin, shadow);

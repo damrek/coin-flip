@@ -6,6 +6,7 @@ import { applyLang, clearHistory, getLang, isCollapsed, setCollapsed } from './u
 import { readCollapsed, readLang } from './store.js';
 import { toggleSound } from './sound.js';
 import { initSpeed, setSpeed } from './speed.js';
+import { initCoin3d } from './coin3d.js';
 
 export function init(): void {
   const coin = document.getElementById('coin');
@@ -51,6 +52,16 @@ export function init(): void {
 
   initSpeed();
   applyLang(readLang());
+
+  // The 3D coin swaps in only when the browser can render it; the SVG coin is
+  // already interactive, so a slow or failed load costs nothing.
+  const canvasHost = document.getElementById('coinCanvas');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (canvasHost && !reduceMotion.matches) {
+    void initCoin3d(canvasHost).then((ok) => {
+      if (ok) document.documentElement.classList.add('is-3d');
+    });
+  }
 }
 
 init();

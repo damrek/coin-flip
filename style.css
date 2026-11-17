@@ -244,6 +244,38 @@ body {
 }
 
 /* ------------------------------------------------------------
+   WebGL coin
+   ------------------------------------------------------------ */
+
+/* Replaces the drawn faces only when the scan loaded; a failed or unsupported
+   load leaves the SVG coin exactly as it was. The canvas is deliberately much
+   larger than the coin: the toss lifts it well above the button box. */
+.coin__canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 260%;
+  height: 260%;
+  display: none;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.coin__canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.is-3d .coin__canvas {
+  display: block;
+}
+
+.is-3d .coin__lift {
+  display: none;
+}
+
+/* ------------------------------------------------------------
    Animation
    ------------------------------------------------------------ */
 
