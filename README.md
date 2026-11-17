@@ -6,15 +6,16 @@ and the history keeps score.
 **Live demo: https://damrek.github.io/coin-flip/**
 
 ![TypeScript, HTML and CSS](https://img.shields.io/badge/stack-TypeScript%20%2F%20HTML%20%2F%20CSS-informational)
-![No runtime dependencies](https://img.shields.io/badge/dependencies-runtime_none-success)
+![Runtime dependency: three.js](https://img.shields.io/badge/runtime-three.js-informational)
 ![TypeScript bundled with tsdown](https://img.shields.io/badge/build-tsdown-informational)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-![Screenshot of the coin flip app showing the coin, a 4/4 tally with flip stats, and a history of eight flips](assets/screenshot.png)
+![Screenshot of the coin flip app showing the 3D aureus, a 4/4 tally with flip stats, and a history of eight flips](assets/screenshot.png)
 
 ## Features
 
-- CSS-only flip animation with a drop shadow that scales with the lift
+- Photogrammetry-scanned Roman aureus rendered in WebGL with three.js, with the drawn SVG coin as fallback
+- Flip animation with a drop shadow that scales with the lift
 - Coin faces drawn as inline SVG (a classical medallion for heads, a cross pattée for tails)
 - Running heads/tails tally
 - Flip stats with heads %, current streak, and best streaks per side
@@ -46,6 +47,7 @@ Then open <http://localhost:8000>.
 | `style.css` | Layout, glow background, flip animation, scrollbar styling |
 | `src/main.ts` | Bundle entry: queries the DOM and wires events |
 | `src/game.ts` | Flip state machine and outcome logic |
+| `src/coin3d.ts` | three.js scene, the scanned aureus and its flip tween |
 | `src/ui.ts` | DOM rendering, language switching, history view |
 | `src/store.ts` | `localStorage` persistence for history, language, sound |
 | `src/stats.ts` | Tally, heads %, streaks |
@@ -53,6 +55,7 @@ Then open <http://localhost:8000>.
 | `src/speed.ts` | Flip-speed factor, `--flip-duration` and sound timing |
 | `src/i18n.ts` | Spanish/English strings |
 | `src/config.ts` | Shared constants |
+| `assets/models/aureus/` | CC0 scan of the coin, loaded at runtime by `GLTFLoader` |
 | `dist/` | Built minified IIFE bundle loaded by `index.html` (gitignored, produced by `npm run build`) |
 
 State lives in four `localStorage` keys: `coinflip.history.v1`, `coinflip.lang`,
@@ -69,6 +72,12 @@ fresh `dist/` bundle) to Pages.
 ## Contributing
 
 Issues and pull requests are welcome.
+
+## Credits
+
+The 3D coin is a CC0 scan of an aureus of Marcus Aurelius (165 AD) by the
+Musée Saint-Raymond, digitised by IMA Solutions from photographs by Daniel
+Martin. `assets/models/aureus/license.txt` keeps the original notice.
 
 ## License
 

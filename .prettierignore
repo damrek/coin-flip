@@ -2,3 +2,6 @@
 index.html
 style.css
 README.md
+
+# Generated 3D asset (third-party scan, keep byte-identical to the source)
+assets/models/

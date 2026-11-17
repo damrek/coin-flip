@@ -11,4 +11,7 @@ export default defineConfig({
   platform: 'browser',
   minify: true,
   sourcemap: true,
+  // three is a runtime dependency, but an IIFE on a static host has no module
+  // loader: it must be inside the bundle, not left as an external global.
+  noExternal: ['three', /^three\//],
 });
