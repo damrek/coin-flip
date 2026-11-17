@@ -10,7 +10,7 @@ and the history keeps score.
 ![TypeScript bundled with tsdown](https://img.shields.io/badge/build-tsdown-informational)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-![Screenshot of the coin flip app showing the coin, a 4/4 tally with flip stats, and a history of eight flips](assets/screenshot.png)
+![Screenshot of the coin flip app showing the 3D aureus, a 4/4 tally with flip stats, and a history of eight flips](assets/screenshot.png)
 
 ## Features
 
