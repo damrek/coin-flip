@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Toss the coin and let it decide.",
   "scripts": {
-    "dev": "tsdown --watch",
+    "dev": "tsdown --watch --sourcemap",
     "build": "tsdown",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",

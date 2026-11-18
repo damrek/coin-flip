@@ -1,18 +1,21 @@
-name: Deploy to GitHub Pages
+name: Build and deploy to GitHub Pages
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
+# Every pull request validates itself in its own group and cancels superseded
+# runs; every publishing run keeps the single `pages` group, serialized and
+# never cancelled mid-flight, exactly as before.
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('pages-pr-{0}', github.ref) || 'pages' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -28,14 +31,22 @@ jobs:
       - run: npm run format:check
       - run: npm run typecheck
       - run: npm run build
-      - run: rm -rf node_modules && mkdir -p site && cp -r index.html style.css assets dist site/
+      # Pull requests stop here: they are validated, not published.
+      - name: Assemble site
+        if: github.event_name != 'pull_request'
+        run: rm -rf node_modules && mkdir -p site && cp -r index.html style.css assets dist site/
       - uses: actions/upload-pages-artifact@v5
+        if: github.event_name != 'pull_request'
         with:
           path: site
 
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
