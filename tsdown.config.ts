@@ -10,7 +10,10 @@ export default defineConfig({
   globalName: 'coinflip',
   platform: 'browser',
   minify: true,
-  sourcemap: true,
+  // No sourcemap in the build that CI deploys: it was 3.2 MB, five times the
+  // bundle itself, and only useful while debugging. `npm run dev` turns it on
+  // again with an explicit `--sourcemap` flag.
+
   // three is a runtime dependency, but an IIFE on a static host has no module
   // loader: it must be inside the bundle, not left as an external global.
   noExternal: ['three', /^three\//],
